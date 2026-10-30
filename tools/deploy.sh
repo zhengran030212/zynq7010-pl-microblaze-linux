@@ -8,9 +8,26 @@ BOARD="${1:-192.168.3.42}"
 SSH="sshpass -p xilinx ssh -o StrictHostKeyChecking=no xilinx@$BOARD"
 SCP="sshpass -p xilinx scp -o StrictHostKeyChecking=no"
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
+BUILDSRV="${BUILDSRV:-usbuild}"
+BUILDSRV_DIR="${BUILDSRV_DIR:-/data/zynq7010-build}"
 
 KERNEL_ADDR=0x1C000000      # 448 MB - high window, free after reboot
 KERNEL_SEEK=$(( KERNEL_ADDR / 1024 / 1024 ))   # 448
+
+# Fetch build artifacts from the remote build server if not present locally.
+if [ ! -f "$HERE/sw/out/mb_kernel_flat.bin" ]; then
+  echo "==> fetching kernel flat bin from $BUILDSRV"
+  rsync -az "$BUILDSRV:$BUILDSRV_DIR/zynq7010-rv/sw/out/mb_kernel_flat.bin" \
+            "$HERE/sw/out/" || { mkdir -p "$HERE/sw/out"; rsync -az \
+            "$BUILDSRV:$BUILDSRV_DIR/zynq7010-rv/sw/out/mb_kernel_flat.bin" \
+            "$HERE/sw/out/"; }
+fi
+if [ ! -f "$HERE/vivado/out/mb_soc_boot.bin" ]; then
+  echo "==> fetching boot bitstream from $BUILDSRV"
+  mkdir -p "$HERE/vivado/out"
+  rsync -az "$BUILDSRV:$BUILDSRV_DIR/zynq7010-rv/vivado/out/mb_soc_boot.bin" \
+            "$HERE/vivado/out/"
+fi
 
 echo "==> copying kernel + bitstream to board"
 $SCP "$HERE/sw/out/mb_kernel_flat.bin"     "xilinx@$BOARD:/tmp/mb_kernel.bin"
