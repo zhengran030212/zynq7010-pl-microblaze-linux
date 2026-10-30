@@ -13,7 +13,7 @@ KERNEL_ADDR=0x1C000000      # 448 MB - high window, free after reboot
 KERNEL_SEEK=$(( KERNEL_ADDR / 1024 / 1024 ))   # 448
 
 echo "==> copying kernel + bitstream to board"
-$SCP "$HERE/sw/out/simpleImage.zynq7010_mb" "xilinx@$BOARD:/tmp/mb_kernel.bin"
+$SCP "$HERE/sw/out/mb_kernel_flat.bin"     "xilinx@$BOARD:/tmp/mb_kernel.bin"
 $SCP "$HERE/vivado/out/mb_soc_boot.bin"    "xilinx@$BOARD:/tmp/mb_soc_boot.bin"
 
 echo "==> loading kernel into DDR @ $KERNEL_ADDR"

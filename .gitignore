@@ -1,0 +1,5 @@
+vivado/build/
+vivado/out/*.bit
+vivado/out/*.bin
+sw/out/
+*.log
