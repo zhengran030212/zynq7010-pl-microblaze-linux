@@ -66,8 +66,8 @@ proc create_root_design { parentCell } {
     CONFIG.C_D_LMB {1} CONFIG.C_I_LMB {1} \
     CONFIG.C_USE_ICACHE {1} CONFIG.C_USE_DCACHE {1} \
     CONFIG.C_ICACHE_ALWAYS_USED {1} CONFIG.C_DCACHE_ALWAYS_USED {1} \
-    CONFIG.C_ICACHE_BASEADDR {0x10000000} CONFIG.C_ICACHE_HIGHADDR {0x17FFFFFF} \
-    CONFIG.C_DCACHE_BASEADDR {0x10000000} CONFIG.C_DCACHE_HIGHADDR {0x17FFFFFF} \
+    CONFIG.C_ICACHE_BASEADDR {0x1C000000} CONFIG.C_ICACHE_HIGHADDR {0x1CFFFFFF} \
+    CONFIG.C_DCACHE_BASEADDR {0x1C000000} CONFIG.C_DCACHE_HIGHADDR {0x1CFFFFFF} \
     CONFIG.C_ICACHE_LINE_LEN {8} CONFIG.C_DCACHE_LINE_LEN {8} \
     CONFIG.C_DCACHE_USE_WRITEBACK {1} \
     CONFIG.C_USE_MMU {3} \
@@ -159,7 +159,7 @@ proc create_root_design { parentCell } {
   # explicit address map:
   #   LMB BRAM  @ 0x0000_0000 (64KB)   - boot vector, exception handlers
   #   uartlite  @ 0x4060_0000           - console
-  #   PS DDR    @ 0x1000_0000 (128MB)   - main memory via HP0
+  #   PS DDR    @ 0x1C00_0000 (16MB)    - main memory via HP0 (safe CMA window)
   foreach seg [get_bd_addr_segs -quiet] { catch {delete_bd_addr_seg $seg} }
 
   create_bd_addr_seg -range 0x10000 -offset 0x00000000 \
@@ -171,10 +171,10 @@ proc create_root_design { parentCell } {
   create_bd_addr_seg -range 0x10000 -offset 0x40600000 \
     [get_bd_addr_spaces microblaze_0/Data] \
     [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] SEG_uart_Reg
-  create_bd_addr_seg -range 0x8000000 -offset 0x10000000 \
+  create_bd_addr_seg -range 0x1000000 -offset 0x1C000000 \
     [get_bd_addr_spaces microblaze_0/Data] \
     [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM] SEG_hp0_ddr_d
-  create_bd_addr_seg -range 0x8000000 -offset 0x10000000 \
+  create_bd_addr_seg -range 0x1000000 -offset 0x1C000000 \
     [get_bd_addr_spaces microblaze_0/Instruction] \
     [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM] SEG_hp0_ddr_i
 

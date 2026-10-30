@@ -1,6 +1,6 @@
 /*
  * Device tree for Zynq-7010 PL MicroBlaze SoC
- * LMB BRAM @0x0 (64KB), PS DDR @0x10000000 (128MB window via HP0)
+ * LMB BRAM @0x0 (64KB), PS DDR @0x1C000000 (16MB window via HP0, high CMA region)
  * uartlite @0x40600000 -> loops to PS UART1 EMIO
  */
 /dts-v1/;
@@ -11,7 +11,7 @@
 	model = "Zynq7010 PL MicroBlaze";
 
 	chosen {
-		bootargs = "console=ttyUL0,115200 root=/dev/ram0 rw initrd=0x11000000,16M";
+		bootargs = "console=ttyUL0,115200 root=/dev/ram0 rw initrd=0x1C800000,8M";
 		linux,stdout-path = "/serial@40600000";
 	};
 
@@ -20,9 +20,9 @@
 		reg = <0x00000000 0x10000>;	/* LMB BRAM 64KB */
 	};
 
-	memory@10000000 {
+	memory@1c000000 {
 		device_type = "memory";
-		reg = <0x10000000 0x8000000>;	/* PS DDR via HP0, 128MB */
+		reg = <0x1C000000 0x1000000>;	/* PS DDR via HP0, 16MB @448MB */
 	};
 
 	cpus {
