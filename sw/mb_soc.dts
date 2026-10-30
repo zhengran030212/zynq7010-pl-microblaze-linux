@@ -1,0 +1,71 @@
+/*
+ * Device tree for Zynq-7010 PL MicroBlaze SoC
+ * LMB BRAM @0x0 (64KB), PS DDR @0x10000000 (128MB window via HP0)
+ * uartlite @0x40600000 -> loops to PS UART1 EMIO
+ */
+/dts-v1/;
+/ {
+	#address-cells = <1>;
+	#size-cells = <1>;
+	compatible = "xlnx,microblaze";
+	model = "Zynq7010 PL MicroBlaze";
+
+	chosen {
+		bootargs = "console=ttyUL0,115200 root=/dev/ram0 rw initrd=0x11000000,16M";
+		linux,stdout-path = "/serial@40600000";
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x00000000 0x10000>;	/* LMB BRAM 64KB */
+	};
+
+	memory@10000000 {
+		device_type = "memory";
+		reg = <0x10000000 0x8000000>;	/* PS DDR via HP0, 128MB */
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "xlnx,microblaze-11.0";
+			reg = <0>;
+			clock-frequency = <100000000>;
+			i-cache-size = <8192>;
+			i-cache-line-size = <32>;
+			d-cache-size = <8192>;
+			d-cache-line-size = <32>;
+			timebase-frequency = <100000000>;
+		};
+	};
+
+	serial@40600000 {
+		compatible = "xlnx,xps-uartlite-1.00.a";
+		device_type = "serial";
+		reg = <0x40600000 0x10000>;
+		clock-frequency = <100000000>;
+		current-speed = <115200>;
+		xlnx,baudrate = <115200>;
+		xlnx,data-bits = <8>;
+		xlnx,use-parity = <0>;
+		xlnx,odd-parity = <0>;
+	};
+
+	/* simple timer using LMB (needed for kernel clock) */
+	timer@41c00000 {
+		compatible = "xlnx,xps-timer-1.00.a";
+		reg = <0x41c00000 0x10000>;
+		clock-frequency = <100000000>;
+		interrupt-parent = <&intc>;
+		interrupts = <1 0>;
+	};
+
+	intc: interrupt-controller@41800000 {
+		compatible = "xlnx,xps-intc-1.00.a";
+		reg = <0x41800000 0x10000>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+	};
+};
